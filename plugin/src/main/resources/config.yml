@@ -1,0 +1,33 @@
+Backup:
+  Save-When:
+    - PLAYER_QUIT
+    - SERVER_SHUTDOWN
+    - EVERY_30_MINUTES
+
+  Load-When:
+    - LOCAL_DATA_MISSING
+    - PLAYER_JOIN
+    - SERVER_RESTART
+
+  Player-Data:
+    Gamemode: true
+    Location: true
+    Inventory: true
+    EnderChest: true
+    Health: true
+    Hunger: true
+    Experience: true
+    Potion-Effects: true
+    Spawnpoint: true
+    Advancements: true
+    Statistics: true
+
+  Plugin-Data:
+    Enabled: false
+    Custom-Folders: []
+
+  Full-Server:
+    Worlds: true
+    PlayerData: true
+    Configurations: true
+    Plugins: true
