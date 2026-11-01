@@ -35,20 +35,5 @@ jobs:
           if gh release view v1.9.0 >/dev/null 2>&1; then
             gh release upload v1.9.0 Just-Backup-v1.9.0.jar --clobber
           else
-            gh release create v1.9.0 Just-Backup-v1.9.0.jar \
-              --target "$GITHUB_SHA" \
-              --title "Just-Backup v1.9.0" \
-              --notes "Just-Backup v1.9.0
-
-Player-data-only cloud backups for Paper 1.21.11.
-
-Highlights:
-- /backup save <player> or /backup save all
-- /backup load <player> or /backup load all
-- Advancement progress restores without advancement chat spam
-- Render-hosted API connected to Neon
-- Maximum 2 backups per player
-- 100 MiB player-backup cap per server
-- 950 MiB global player-backup cap
-- No world or chunk backups"
+            gh release create v1.9.0 Just-Backup-v1.9.0.jar --target "$GITHUB_SHA" --title "Just-Backup v1.9.0" --notes "Player-data-only cloud backups for Paper 1.21.11. Supports /backup save <player|all> and /backup load <player|all>, restores advancements without chat spam, uses the Render API with Neon, keeps 2 backups per player, and never backs up worlds or chunks."
           fi
