@@ -2,7 +2,7 @@ Backup:
   Save-When:
     - PLAYER_QUIT
     - SERVER_SHUTDOWN
-    - EVERY_30_MINUTES
+    - EVERY_60_MINUTES
 
   Load-When:
     - LOCAL_DATA_MISSING
