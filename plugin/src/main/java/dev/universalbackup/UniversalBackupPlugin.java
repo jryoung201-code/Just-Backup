@@ -32,7 +32,7 @@ public final class UniversalBackupPlugin extends JavaPlugin {
         BackupCommand command = new BackupCommand(this);
         getCommand("backup").setExecutor(command);
         getCommand("backup").setTabCompleter(command);
-        getServer().getPluginManager().registerEvents(new BackupListener(this), this);
+        getServer().getPluginManager().registerEvents(new BackupListener(this, command), this);
 
         if (!registration.isRegistered()) announceNotActivated();
         else getLogger().info("Just-Backup is active. Backup mode: player data only.");
