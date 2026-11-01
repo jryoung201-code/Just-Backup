@@ -44,13 +44,15 @@ public final class BackupListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         if (!plugin.isReady() || !plugin.shouldSave("PLAYER_QUIT")) return;
-        plugin.runAsync(() -> {
-            try {
-                plugin.playerBackups().save(e.getPlayer());
-            } catch (Exception ex) {
-                plugin.logFailure("Automatic player save failed", ex);
-            }
-        });
+
+        // Do this synchronously. During a server stop Paper can disable plugins
+        // immediately after players quit, which can cancel queued async tasks
+        // before their cloud upload finishes.
+        try {
+            plugin.playerBackups().save(e.getPlayer());
+        } catch (Exception ex) {
+            plugin.logFailure("Automatic player save failed", ex);
+        }
     }
 
     @SuppressWarnings("deprecation")
