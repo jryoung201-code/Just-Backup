@@ -124,13 +124,14 @@ public final class UniversalBackupPlugin extends JavaPlugin {
         getLogger().warning("========================================");
     }
 
-    public void requestRestart() {
-        getLogger().warning("[Backup] Setup changed. Please restart the server to finish activation.");
+    public void restartAfterSetup() {
+        getLogger().warning("[Backup] Setup changed. Restarting server...");
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.isOp() || player.hasPermission("backup.admin")) {
-                player.sendMessage(ChatColor.YELLOW + "[Backup] Setup changed. Restarting is required.");
+                player.sendMessage(ChatColor.YELLOW + "[Backup] Setup changed. Server restarting...");
             }
         }
+        Bukkit.getScheduler().runTaskLater(this, () -> Bukkit.spigot().restart(), 40L);
     }
 
     public void logFailure(String message, Throwable error) {
