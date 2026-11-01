@@ -11,6 +11,7 @@ Backup:
 
   Player-Data:
     Gamemode: true
+    HasOp: true
     Location: true
     World: true
     Inventory: true
