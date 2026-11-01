@@ -6,7 +6,6 @@ Backup:
 
   Load-When:
     - LOCAL_DATA_MISSING
-    - PLAYER_JOIN
     - SERVER_RESTART
 
   Player-Data:
