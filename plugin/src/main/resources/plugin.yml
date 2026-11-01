@@ -1,0 +1,15 @@
+name: UniversalSMPBackup
+version: 0.1.0
+main: dev.universalbackup.UniversalBackupPlugin
+api-version: '1.21'
+load: STARTUP
+author: JR_25736
+commands:
+  backup:
+    description: Universal SMP Backup commands
+    usage: /backup
+    permission: backup.admin
+permissions:
+  backup.admin:
+    description: Allows managing Universal SMP backups
+    default: op
