@@ -33,24 +33,6 @@ CREATE TABLE IF NOT EXISTS player_backups (
 );
 CREATE INDEX IF NOT EXISTS idx_player_latest ON player_backups(account_id, player_uuid, created_at_ms DESC);
 
-CREATE TABLE IF NOT EXISTS server_backups (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  server_id UUID NOT NULL REFERENCES servers(id) ON DELETE CASCADE,
-  checksum TEXT NOT NULL,
-  size_bytes BIGINT NOT NULL,
-  chunk_count INTEGER,
-  complete BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS idx_server_backup_latest ON server_backups(server_id, created_at DESC);
-
-CREATE TABLE IF NOT EXISTS backup_chunks (
-  backup_id UUID NOT NULL REFERENCES server_backups(id) ON DELETE CASCADE,
-  chunk_index INTEGER NOT NULL,
-  data BYTEA NOT NULL,
-  PRIMARY KEY (backup_id, chunk_index)
-);
-
 CREATE TABLE IF NOT EXISTS destructive_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   server_id UUID NOT NULL REFERENCES servers(id) ON DELETE CASCADE,
