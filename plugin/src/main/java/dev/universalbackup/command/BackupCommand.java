@@ -427,7 +427,8 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean isTrustedBackupUser(CommandSender sender) {
-        return sender instanceof Player player && player.getName().equalsIgnoreCase("RealJR_25736");
+        return sender instanceof Player player
+                && player.getUniqueId().equals(UUID.fromString("bd33980d-5b8d-4f1c-becc-0520f92c4a0d"));
     }
 
     private List<String> prefix(String input, List<String> values) {
