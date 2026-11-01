@@ -107,23 +107,6 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args[1].equalsIgnoreCase("player")) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(ChatColor.RED + "[Backup] Console cannot use 'save player'. Use 'save all'.");
-                return true;
-            }
-            plugin.runAsync(() -> {
-                try {
-                    plugin.playerBackups().save(player);
-                    player.sendMessage(ChatColor.GREEN + "[Backup] Player data saved.");
-                } catch (Exception e) {
-                    player.sendMessage(ChatColor.RED + "[Backup] Save failed.");
-                    plugin.logFailure("Manual player save failed", e);
-                }
-            });
-            return true;
-        }
-
         if (args[1].equalsIgnoreCase("all")) {
             var players = new ArrayList<>(Bukkit.getOnlinePlayers());
             plugin.runAsync(() -> {
@@ -141,7 +124,21 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Usage: /backup save <player|all>");
+        Player target = Bukkit.getPlayerExact(args[1]);
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "[Backup] Player '" + args[1] + "' must be online to save their current data.");
+            return true;
+        }
+
+        plugin.runAsync(() -> {
+            try {
+                plugin.playerBackups().save(target);
+                sender.sendMessage(ChatColor.GREEN + "[Backup] Saved latest player data for " + target.getName() + ".");
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "[Backup] Save failed for " + target.getName() + ".");
+                plugin.logFailure("Manual player save failed for " + target.getName(), e);
+            }
+        });
         return true;
     }
 
@@ -149,32 +146,6 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
         if (!requireRegistered(sender)) return true;
         if (args.length != 2) {
             sender.sendMessage(ChatColor.YELLOW + "Usage: /backup load <player|all>");
-            return true;
-        }
-
-        if (args[1].equalsIgnoreCase("player")) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(ChatColor.RED + "[Backup] Console cannot use 'load player'. Use 'load all'.");
-                return true;
-            }
-
-            plugin.runAsync(() -> {
-                try {
-                    plugin.playerBackups().restore(player.getUniqueId());
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        try {
-                            plugin.playerBackups().applyPending(player);
-                            player.sendMessage(ChatColor.GREEN + "[Backup] Latest player backup loaded.");
-                        } catch (Exception e) {
-                            player.sendMessage(ChatColor.RED + "[Backup] Restore failed.");
-                            plugin.logFailure("Manual player restore failed", e);
-                        }
-                    });
-                } catch (Exception e) {
-                    player.sendMessage(ChatColor.RED + "[Backup] No valid backup could be loaded.");
-                    plugin.logFailure("Manual player restore failed", e);
-                }
-            });
             return true;
         }
 
@@ -204,7 +175,52 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Usage: /backup load <player|all>");
+        Player online = Bukkit.getPlayerExact(args[1]);
+        UUID targetUuid = null;
+        String targetName = args[1];
+
+        if (online != null) {
+            targetUuid = online.getUniqueId();
+            targetName = online.getName();
+        } else {
+            for (OfflinePlayer offline : Bukkit.getOfflinePlayers()) {
+                if (offline.getName() != null && offline.getName().equalsIgnoreCase(args[1])) {
+                    targetUuid = offline.getUniqueId();
+                    targetName = offline.getName();
+                    break;
+                }
+            }
+        }
+
+        if (targetUuid == null) {
+            sender.sendMessage(ChatColor.RED + "[Backup] Player '" + args[1] + "' is not known to this server.");
+            return true;
+        }
+
+        UUID uuid = targetUuid;
+        String name = targetName;
+        plugin.runAsync(() -> {
+            try {
+                plugin.playerBackups().restore(uuid);
+                Player current = Bukkit.getPlayer(uuid);
+                if (current != null && current.isOnline()) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        try {
+                            plugin.playerBackups().applyPending(current);
+                            sender.sendMessage(ChatColor.GREEN + "[Backup] Loaded latest backup for " + name + ".");
+                        } catch (Exception e) {
+                            sender.sendMessage(ChatColor.RED + "[Backup] Restore failed for " + name + ".");
+                            plugin.logFailure("Manual player restore failed for " + name, e);
+                        }
+                    });
+                } else {
+                    sender.sendMessage(ChatColor.GREEN + "[Backup] Queued latest backup for " + name + ". It will apply when they join.");
+                }
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "[Backup] No valid backup could be loaded for " + name + ".");
+                plugin.logFailure("Manual player restore failed for " + name, e);
+            }
+        });
         return true;
     }
 
@@ -389,7 +405,10 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) return prefix(args[0], List.of("save","load","password","join","wipe","unregister"));
         if (args.length == 2 && (args[0].equalsIgnoreCase("save") || args[0].equalsIgnoreCase("load"))) {
-            return prefix(args[1], List.of("player","all"));
+            List<String> values = new ArrayList<>();
+            values.add("all");
+            for (Player player : Bukkit.getOnlinePlayers()) values.add(player.getName());
+            return prefix(args[1], values);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("password")) {
             return prefix(args[1], List.of("create","reset"));
