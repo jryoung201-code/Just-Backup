@@ -8,7 +8,6 @@ commands:
   backup:
     description: Universal SMP Backup commands
     usage: /backup
-    permission: backup.admin
 permissions:
   backup.admin:
     description: Allows managing Universal SMP backups
