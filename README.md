@@ -137,7 +137,7 @@ By default, player data is saved:
 
 - When a player quits
 - When the server shuts down
-- Every 30 minutes
+- Every 1 hour
 
 ## Default automatic loads
 
@@ -165,7 +165,7 @@ Backup:
   Save-When:
     - PLAYER_QUIT
     - SERVER_SHUTDOWN
-    - EVERY_30_MINUTES
+    - EVERY_60_MINUTES
 
   Load-When:
     - LOCAL_DATA_MISSING
