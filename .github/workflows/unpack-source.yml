@@ -1,0 +1,35 @@
+name: Unpack source archive
+
+on:
+  push:
+    paths:
+      - 'source/Just-Backup-source.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unpack project source
+        run: |
+          rm -rf backend plugin
+          unzip -o source/Just-Backup-source.zip -d .
+          rm -rf source/.github
+          rm -f source/README.md source/.gitignore
+
+      - name: Commit unpacked source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend plugin .github/workflows/build-plugin.yml .gitignore
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+          else
+            git commit -m "Unpack Just-Backup source"
+            git push
+          fi
