@@ -43,13 +43,17 @@ public final class UniversalBackupPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (!isReady() || !shouldSave("SERVER_SHUTDOWN")) return;
-        for (Player player : Bukkit.getOnlinePlayers()) {
+
+        int attempted = 0;
+        for (Player player : new java.util.ArrayList<>(Bukkit.getOnlinePlayers())) {
+            attempted++;
             try {
                 playerBackups.save(player);
             } catch (Exception e) {
                 logFailure("Shutdown backup failed for " + player.getName(), e);
             }
         }
+        getLogger().info("[Backup] Shutdown save pass finished for " + attempted + " online player(s).");
     }
 
     private void scheduleIntervals() {
