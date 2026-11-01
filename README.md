@@ -2,17 +2,15 @@
 
 Just-Backup is a **player-data cloud backup plugin for Paper 1.21.11**.
 
-It is designed for server owners who want player inventories and other player-linked data backed up remotely without uploading world files or full server folders.
-
 > Current release: **v1.9.3**  
 > Requires **Java 21** and **Paper 1.21.11**
 
-## What Just-Backup backs up
+## What it backs up
 
 By default, Just-Backup can save:
 
 - Gamemode
-- OP status (`HasOp`)
+- OP status
 - Location and world
 - Inventory
 - Armor
@@ -29,50 +27,43 @@ By default, Just-Backup can save:
 
 Each option can be enabled or disabled in `config.yml`.
 
-## What it does NOT back up
+## What it does not back up
 
 Just-Backup does **not** back up:
 
 - Worlds
 - Chunks
 - Region files
-- World folders
-- Map files
 - Full server folders
-- Plugins as a whole
 - Server configuration files
 
-The backup system is intentionally limited to data linked to individual players.
+It is only for player-linked data.
 
 ## Installation
 
 1. Download the latest JAR from the GitHub Releases page.
-2. Put the JAR inside your server's `plugins/` folder.
+2. Put the JAR in your server's `plugins/` folder.
 3. Start the server.
-4. Create a Just-Backup account from the server console or as an authorized admin:
+4. Create your backup account:
 
 ```
 /backup password create <password> <confirm-password>
 ```
 
-5. The server will restart after registration.
-6. Once it comes back online, player backups are active.
+5. The server will restart after setup.
+6. Once it starts again, backups are active.
 
-Do not share the backup password. It is used to register or link servers to the same backup account.
+## Link another server
 
-## Linking another server
-
-To connect another Paper server to the same Just-Backup account, install the plugin on that server and run:
+Install Just-Backup on the other server, then run:
 
 ```
 /backup join <password>
 ```
 
-The server will register with the same cloud backup account and restart.
+That server will connect to the same backup account.
 
-Linked servers can access the latest backups for players in that account.
-
-## Backup commands
+## Commands
 
 Save one online player:
 
@@ -80,93 +71,77 @@ Save one online player:
 /backup save <player>
 ```
 
-Example:
-
-```
-/backup save RealJR_25736
-```
-
-Save every currently online player:
+Save every online player:
 
 ```
 /backup save all
 ```
 
-Load one player's newest cloud backup:
+Load one player's newest backup:
 
 ```
 /backup load <player>
 ```
 
-If the player is online, the backup is applied immediately. If the player is offline but known to the server, the restore is queued and applied when they join.
-
-Load the newest cloud backup for all known players:
+Load backups for all known players:
 
 ```
 /backup load all
 ```
 
-Online players are restored immediately. Offline players are queued for restore.
-
-## Account commands
-
-Create a new backup account:
+Create a backup account:
 
 ```
 /backup password create <password> <confirm-password>
 ```
 
-Change the account password:
+Change the backup password:
 
 ```
 /backup password reset <old-password> <new-password> <confirm-new-password>
 ```
 
-Join an existing account:
+Join an existing backup account:
 
 ```
 /backup join <password>
 ```
 
-Destructive account actions are protected by an additional verification flow:
+Delete this server's cloud backups:
 
 ```
 /backup wipe <password>
 /backup wipe --confirm
+```
 
+Unregister this server:
+
+```
 /backup unregister <password>
 /backup unregister --confirm
 ```
 
-`wipe` removes this server's remote player backups while keeping the registration.
-
-`unregister` removes this server from the backup account and removes its associated remote backups. It does **not** delete local Minecraft player files.
-
 ## Permissions
 
-Administrative backup commands require:
+Admin commands require:
 
 ```
 backup.admin
 ```
 
-The permission defaults to server operators.
-
-The current build also contains one hardcoded trusted player UUID that may use only `/backup save` and `/backup load` without `backup.admin`. It does not grant access to password, wipe, join, or unregister commands.
+This permission defaults to server operators.
 
 ## Default automatic saves
 
-The default configuration saves player data:
+By default, player data is saved:
 
 - When a player quits
 - When the server shuts down
 - Every 30 minutes
 
-Shutdown and quit backups are handled so the cloud save completes before Paper finishes disabling the plugin.
-
 ## Default automatic loads
 
-The default configuration is:
+The default config is:
 
 ```yaml
 Load-When:
@@ -174,11 +149,16 @@ Load-When:
   - SERVER_RESTART
 ```
 
-Normal player joins do **not** automatically load a cloud backup by default.
+Normal player joins do **not** automatically load a cloud backup.
 
-You can still restore manually with `/backup load <player>` or `/backup load all`.
+Manual restores still work with:
 
-## Default configuration
+```
+/backup load <player>
+/backup load all
+```
+
+## Default config
 
 ```yaml
 Backup:
@@ -215,71 +195,30 @@ Backup:
     Custom-Folders: []
 ```
 
-## OP-status restores
+## Important notes
 
-When `HasOp: true`, new backups record whether the player was an operator.
+If `HasOp: true`, restoring a backup can also restore the player's OP status.
 
-When that backup is restored, their saved OP status is restored too.
-
-Older backups that do not contain the `HasOp` field will not change the player's current OP status.
-
-If you do not want cloud restores to change operator status, set:
+If you do not want OP status restored, change it to:
 
 ```yaml
 HasOp: false
 ```
 
-## Advancement restores
-
-Advancement progress can be restored without flooding chat.
-
-Just-Backup temporarily suppresses advancement announcements while applying restored advancement criteria and then restores the world's previous advancement-announcement gamerule.
-
-## Storage limits
-
-The hosted backup service currently uses these limits:
-
-- Maximum **2 backups per player**
-- Maximum **100 MiB** of player-backup data per registered server
-- Maximum **950 MiB** of player-backup data across the complete backup account
-
-When possible, older backups are removed first while preserving the newest valid backup for each player.
-
-## Cloud service
-
-The plugin connects to the hosted Just-Backup API over HTTPS.
-
-Database credentials and backend secrets are stored on the hosted service and are **not** included in the plugin JAR or committed to this repository.
-
 ## Updating
 
-To update Just-Backup:
-
 1. Stop the server.
-2. Replace the old Just-Backup JAR with the newer release.
-3. Start the server again.
-4. Keep your existing plugin data folder unless the release notes specifically say otherwise.
+2. Replace the old Just-Backup JAR with the new one.
+3. Start the server.
+
+Keep the existing plugin data folder unless the release notes say otherwise.
 
 ## Troubleshooting
 
-If backups are not saving, check the server console for messages beginning with:
+If backups are not saving or loading:
 
-```
-[Backup]
-```
-
-During shutdown, a successful shutdown pass logs how many online players were processed.
-
-Also verify that:
-
-- The server is registered.
-- The server can reach the hosted API over HTTPS.
-- Your backup account has not reached its storage limit.
-- The player is online when using `/backup save <player>`.
-- The player is known to the server when loading an offline player.
-
-## Repository layout
-
-- `plugin/` — Paper plugin source
-- `backend/` — hosted backup API
-- `backend/sql/schema.sql` — backend database schema
+- Check the server console for `[Backup]` errors.
+- Make sure the server is registered.
+- Make sure the player is online when using `/backup save <player>`.
+- Make sure the player is known to the server when restoring an offline player.
+- Make sure the server can make outbound HTTPS connections.
