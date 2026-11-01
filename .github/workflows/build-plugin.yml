@@ -20,5 +20,5 @@ jobs:
         run: mvn --batch-mode --no-transfer-progress clean package
       - uses: actions/upload-artifact@v4
         with:
-          name: Just-Backup-1.9.0
-          path: plugin/target/universal-smp-backup-1.9.0.jar
+          name: Just-Backup-1.9.3
+          path: plugin/target/universal-smp-backup-1.9.3.jar
