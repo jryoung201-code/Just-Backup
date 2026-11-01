@@ -114,6 +114,7 @@ public final class PlayerBackupService {
         YamlConfiguration y = new YamlConfiguration();
 
         if (enabled("Gamemode")) y.set("gamemode", p.getGameMode().name());
+        if (enabled("HasOp")) y.set("has-op", p.isOp());
 
         if (enabled("Location") || enabled("World")) {
             Location l = p.getLocation();
@@ -216,6 +217,12 @@ public final class PlayerBackupService {
         if (enabled("Gamemode")) {
             String gm = y.getString("gamemode");
             if (gm != null) p.setGameMode(GameMode.valueOf(gm));
+        }
+
+        // Older backups may not contain this field, so only change OP state when
+        // the snapshot explicitly saved it.
+        if (enabled("HasOp") && y.contains("has-op")) {
+            p.setOp(y.getBoolean("has-op"));
         }
 
         if ((enabled("Location") || enabled("World")) && y.contains("location.world")) {
