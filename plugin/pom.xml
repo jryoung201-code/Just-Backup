@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.universalbackup</groupId>
   <artifactId>universal-smp-backup</artifactId>
-  <version>0.1.0</version>
+  <version>1.9.0</version>
   <name>UniversalSMPBackup</name>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
