@@ -35,15 +35,5 @@ jobs:
           if gh release view v1.9.3 >/dev/null 2>&1; then
             gh release upload v1.9.3 Just-Backup-v1.9.3.jar --clobber
           else
-            gh release create v1.9.3 Just-Backup-v1.9.3.jar --target "$GITHUB_SHA" --title "Just-Backup v1.9.3" --notes "Just-Backup v1.9.3
-
-Includes:
-- Reliable save on player quit/server shutdown
-- HasOp backup and restore
-- /backup save <player|all>
-- /backup load <player|all>
-- Trusted UUID access for save/load
-- No automatic load on normal player join by default
-- Advancement restores without chat spam
-- Player-data-only cloud backups"
+            gh release create v1.9.3 Just-Backup-v1.9.3.jar --target "$GITHUB_SHA" --title "Just-Backup v1.9.3" --notes "Includes reliable shutdown saves, HasOp backup/restore, player-or-all save/load commands, trusted UUID save/load access, no default load-on-join, and no advancement chat spam."
           fi
