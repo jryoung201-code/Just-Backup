@@ -12,22 +12,21 @@ Backup:
   Player-Data:
     Gamemode: true
     Location: true
+    World: true
     Inventory: true
+    Armor: true
+    Offhand: true
     EnderChest: true
     Health: true
     Hunger: true
+    Saturation: true
     Experience: true
     Potion-Effects: true
     Spawnpoint: true
     Advancements: true
     Statistics: true
+    Recipes: true
 
   Plugin-Data:
     Enabled: false
     Custom-Folders: []
-
-  Full-Server:
-    Worlds: true
-    PlayerData: true
-    Configurations: true
-    Plugins: true
