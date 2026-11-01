@@ -1,24 +1,17 @@
 # Just-Backup
 
-Universal SMP player-backup system for Paper 1.21.11 / Java 21.
+Universal multi-server **player-data backup** plugin for Paper 1.21.11 / Java 21.
 
-## Backend
-- Neon project: `just-backup`
-- Neon project ID: `wandering-glade-30809914`
-- Database: `justbackup`
-- Database credentials are **not stored in this repository**.
-- Hosted API reads `DATABASE_URL`, `TOKEN_SECRET`, and `PASSWORD_LOOKUP_SECRET` from environment variables.
+## Important
+Just-Backup does **not** back up worlds, chunks, region files, maps, or full server archives.
 
-## Retention
-- 2 newest player backups per player
-- 100 MiB maximum player-backup storage per registered server
-- 950 MiB maximum player-backup storage across all servers combined
+Everything stored remotely must be linked to a player and enabled under `Backup.Player-Data` or `Backup.Plugin-Data` in `config.yml`.
 
 ## Commands
-- `/backup save player`
-- `/backup save all`
-- `/backup load player`
-- `/backup load all`
+- `/backup save player` — save your player data
+- `/backup save all` — save all currently loaded players
+- `/backup load player` — load your latest player backup
+- `/backup load all` — queue the latest backup for every known player; offline players restore when they join
 - `/backup password create <password> <confirm>`
 - `/backup password reset <old> <new> <confirm>`
 - `/backup join <password>`
@@ -27,4 +20,20 @@ Universal SMP player-backup system for Paper 1.21.11 / Java 21.
 - `/backup unregister <password>`
 - `/backup unregister --confirm`
 
-The complete source is committed under the normal project folders.
+## Storage policy
+These limits are hard-coded and are not exposed in the Minecraft config:
+- newest **2 backups per player**
+- maximum **100 MiB of player-backup data per registered server**
+- maximum **950 MiB of player-backup data across all servers**
+
+## Neon
+- project: `just-backup`
+- project ID: `wandering-glade-30809914`
+- database: `justbackup`
+
+Neon credentials are never committed to this repository or shipped in the plugin JAR. The hosted API uses environment variables.
+
+## Repository layout
+- `plugin/` — Paper plugin
+- `backend/` — hosted backup API
+- `backend/sql/schema.sql` — player-data-only schema
