@@ -80,9 +80,34 @@ public final class PlayerBackupService {
         YamlConfiguration data = new YamlConfiguration();
         data.loadFromString(yaml);
 
-        clearConfiguredData(player);
-        apply(player, data);
-        player.saveData();
+        Map<World, Boolean> advancementAnnouncements = disableAdvancementAnnouncements();
+        try {
+            clearConfiguredData(player);
+            apply(player, data);
+            player.saveData();
+        } finally {
+            restoreAdvancementAnnouncements(advancementAnnouncements);
+        }
+    }
+
+    private Map<World, Boolean> disableAdvancementAnnouncements() {
+        Map<World, Boolean> previous = new LinkedHashMap<>();
+        if (!enabled("Advancements")) return previous;
+
+        for (World world : Bukkit.getWorlds()) {
+            Boolean oldValue = world.getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
+            previous.put(world, oldValue);
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        }
+        return previous;
+    }
+
+    private void restoreAdvancementAnnouncements(Map<World, Boolean> previous) {
+        for (Map.Entry<World, Boolean> entry : previous.entrySet()) {
+            if (entry.getValue() != null) {
+                entry.getKey().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, entry.getValue());
+            }
+        }
     }
 
     private String serialize(Player p) {
